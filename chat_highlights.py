@@ -1,6 +1,6 @@
-from typing import Pattern
+import re
+from typing import Dict, Pattern, Tuple
 from dataclasses import dataclass
-from re import compile, match
 
 
 @dataclass
@@ -10,5 +10,22 @@ class MessageRecord:
     text: str
 
 
-def get_chat_highlights(records: MessageRecord, keywords: Pattern, messages_interval: float, min_messages: float):
+@dataclass
+class Highlight:
+    start: float
+    end: float
+    messages_count: int
+    authors: set[str]
+
+
+@dataclass
+class HighlightConfig:
+    keywords: Pattern
+    messages_interval: float
+    min_messages: int
+
+
+def get_chat_highlights(
+    records: Tuple[MessageRecord, ...], config: HighlightConfig
+) -> Dict[str, Highlight]:
     pass
