@@ -1,5 +1,5 @@
-from unittest import TestCase
 import re
+from unittest import TestCase, main
 from chat_highlights import (
     Highlight,
     HighlightConfig,
@@ -7,9 +7,13 @@ from chat_highlights import (
     get_chat_highlights,
 )
 
+
 class TestChatHighlights(TestCase):
     def setUp(self):
-        self.config = HighlightConfig(re.compile(r"(ha)?(roflan)?"), 4, 2)
+        regex = re.compile(r"(ha)?(roflan)?")
+        microsecs = 4 * 1000000
+        min_messages = 2
+        self.config = HighlightConfig(regex, microsecs, min_messages)
 
     def test_get_chat_highlights(self):
         records = (
@@ -21,8 +25,12 @@ class TestChatHighlights(TestCase):
             MessageRecord(10000000, "author3", "haha"),
         )
         actual = get_chat_highlights(records, self.config)
-        expected = {
-            "haha": Highlight(1000000, 5000000, 2, set("author1", "author2")),
-            "roflan": Highlight(2000000, 5500000, 2, set("author1", "author2")),
-        }
-        self.assertDictEqual(actual, expected)
+        expected = [
+            Highlight("ha", 1000000, 5000000, 2, {"author1", "author2"}),
+            Highlight("roflan", 2000000, 5500000, 2, {"author1", "author2"}),
+        ]
+        self.assertListEqual(actual, expected)
+
+
+if __name__ == "__main__":
+    main()
